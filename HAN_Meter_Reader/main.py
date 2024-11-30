@@ -33,7 +33,7 @@ while wlan.status() != 3:
 
 #led on when connected to wlan
 led.on()
-print("WIFI CONNECTED")
+
 mqc = MQTTClient(config.MQTTTopic, config.MQTTHost, 1883, config.MQTTUser, config.MQTTPass)
 
 try:
