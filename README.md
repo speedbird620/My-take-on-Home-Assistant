@@ -1,6 +1,8 @@
 # My-take-on-Home-Assistant
 
-Mina anteckningar för att få igång min HAN-port med Home Assistant.
+Mina anteckningar för att få igång min HAN-port med Home Assistant. 
+
+Obs: inte så snygggt, men det funkar! Ska polera koden senare.
 
 Spec på meddelanden från HAN-porten. Se sida 21 och frammåt:
 
