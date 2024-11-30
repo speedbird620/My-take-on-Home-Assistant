@@ -3,6 +3,7 @@
 Mina anteckningar för att få igång min HAN-port med Home Assistant.
 
 ![image](https://github.com/user-attachments/assets/92d954cc-ea6b-4a86-b90b-473fdb16f454)
+
 Notera att GP4 sätts hög och matar GP5 med ström via motståndet R1.
 
 ![image](https://github.com/user-attachments/assets/f4872115-89f5-47be-b81a-cbf5b15ee0e4)
