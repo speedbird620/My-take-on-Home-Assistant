@@ -2,6 +2,10 @@
 
 Mina anteckningar för att få igång min HAN-port med Home Assistant.
 
+Spec på meddelanden från HAN-porten. Se sida 21 och frammåt:
+
+https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurser-och-konferenser/elnat/branschrekommendation-lokalt-granssnitt-v2_0-201912.pdf
+
 ![image](https://github.com/user-attachments/assets/92d954cc-ea6b-4a86-b90b-473fdb16f454)
 
 Notera att GP4 sätts hög och matar GP5 med ström via motståndet R1.
