@@ -8,12 +8,11 @@ from machine import UART
 from machine import Pin
 from umqtt.simple import MQTTClient
 
-
 led = machine.Pin("LED", machine.Pin.OUT)
 led.on()
 
 highPin = Pin(4, machine.Pin.OUT)
-highPin.on()
+highPin.on()                                       # Set pin high to feed pin 5 with power
 
 network.hostname(config.MyHostName)
 wlan = network.WLAN(network.STA_IF)
