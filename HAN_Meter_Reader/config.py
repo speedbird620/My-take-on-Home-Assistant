@@ -1,0 +1,5 @@
+SSID = 'SSID'
+PSK = 'PASSWORD'
+MQTTHost = 'IP-ADDRESS-TO-MQTTBroker'
+MQTTTopic = 'MQTT-TOPIC'
+MyHostName = 'MY-NAME-HERE'
