@@ -1,0 +1,156 @@
+# Add this to /homeassistant/configuration.yaml
+
+mqtt:
+  sensor:
+    - name: "HAN: Dagens Datum/ Tid (normaltid)"
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.date }}"
+
+    - name: "HAN: Mätarställning Aktiv Energi Uttag"
+      unit_of_measurement: kWh
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_meter_u }}"
+      state_class: total_increasing
+
+    - name: "HAN: Mätarställning Aktiv Energi Inmatning"
+      unit_of_measurement: kWh
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_meter_i }}"
+      state_class: total_increasing
+
+    - name: "HAN: Mätarställning Reaktiv Energi Uttag"
+      unit_of_measurement: kVArh
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_meter_u }}"
+      state_class: total_increasing
+
+    - name: "HAN: Mätarställning Rektiv Energi Inmatning"
+      unit_of_measurement: kVArh
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_meter_i }}"
+      state_class: total_increasing
+
+    - name: "HAN: Aktiv effekt uttag"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_u }}"
+
+    - name: "HAN: Aktiv effekt inmatning"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_u }}"
+
+    - name: "HAN: Reaktiv effekt uttag"
+      unit_of_measurement: WAr
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_u }}"
+
+    - name: "HAN: Reaktiv effekt inmatning"
+      unit_of_measurement: kVAr
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_i }}"
+
+    - name: "HAN: Aktiv effekt uttag L1"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_l1_u }}"
+
+    - name: "HAN: Aktiv effekt uttag L2"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_l2_u }}"
+
+    - name: "HAN: Aktiv effekt uttag L3"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_l3_u }}"
+
+    - name: "HAN: Aktiv effekt inmatning L1"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_l1_i }}"
+
+    - name: "HAN: Aktiv effekt L2 inmatning"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_l2_i }}"
+
+    - name: "HAN: Aktiv effekt L3 inmatning"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.a_effekt_l3_i }}"
+
+    - name: "HAN: Reaktiv effekt uttag L1"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l1_u }}"
+
+    - name: "HAN: Reaktiv effekt L2 uttag"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l2_u }}"
+
+    - name: "HAN: Reaktiv effekt L3 uttag"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l3_u }}"
+
+    - name: "HAN: Reaktiv effekt inmatning L1"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l1_i }}"
+
+    - name: "HAN: Reaktiv effekt inmatning L2"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l2_i }}"
+
+    - name: "HAN: Reaktiv effekt inmatning L3"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l3_i }}"
+
+    - name: "HAN: Reaktiv effekt uttag L1"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l1_u }}"
+
+    - name: "HAN: Reaktiv effekt L2 uttag"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l2_u }}"
+
+    - name: "HAN: Reaktiv effekt L3 uttag"
+      unit_of_measurement: kW
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.r_effekt_l3_u }}"
+
+    - name: "HAN: Fasspänning L1"
+      unit_of_measurement: V
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.volt_l1 }}"
+
+    - name: "HAN: Fasspänning L2"
+      unit_of_measurement: V
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.volt_l2 }}"
+
+    - name: "HAN: Fasspänning L3"
+      unit_of_measurement: V
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.volt_l3 }}"
+
+    - name: "HAN: Fasström L1"
+      unit_of_measurement: A
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.amp_l1 }}"
+
+    - name: "HAN: Fasström L2"
+      unit_of_measurement: A
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.amp_l2 }}"
+
+    - name: "HAN: Fasström L3"
+      unit_of_measurement: A
+      state_topic: "hanport"
+      value_template: "{{ value_json.hanport_a.amp_l3 }}"
