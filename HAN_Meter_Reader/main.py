@@ -33,7 +33,7 @@ while wlan.status() != 3:
 
 #led on when connected to wlan
 led.on()
-
+print("WIFI CONNECTED")
 mqc = MQTTClient(config.MQTTTopic, config.MQTTHost, 1883, config.MQTTUser, config.MQTTPass)
 
 try:
@@ -120,11 +120,11 @@ while True:
             message = "r_effekt_u"
             value = s[10:18]
 
-        elif (s[:10]) == "1-0:4.7.0":
+        elif (s[:9]) == "1-0:4.7.0":
             # Reaktiv effekt inmatning, kVAr
             # 1-0:4.7.0(0000.252*kVAr)
             message = "r_effekt_i"
-            value = s[11:18]
+            value = s[10:18]
 
         elif (s[:10]) == "1-0:21.7.0":
             # Aktiv effekt uttag L1, kW
