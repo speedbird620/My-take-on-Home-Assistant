@@ -275,12 +275,19 @@ while True:
             except:
                 #machine.soft_reset()
                 print('Except done when publish!')
-        
+
+        if (date[:6] != date_old) and (date != ""):
+            print("A new date, lets reboot!")
+            machine.soft_reset()
+
     s_old = s
+    date_old = date[:6]
+
 
     #time.sleep(0.3)
 
     gc.collect()
     led.on()
+
 
 
