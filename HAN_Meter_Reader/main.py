@@ -21,6 +21,7 @@ wlan.connect(config.SSID, config.PSK)
 led.off()
 
 s_old = ""
+date = ""
 date_old = ""
 
 waitcount = 0
