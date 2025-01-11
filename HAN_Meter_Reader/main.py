@@ -54,6 +54,9 @@ print("MQTT CONNECTED")
 # The main loop
 while True:
 
+    # Reseting from last scan
+    s = ""
+    
     # Setting up the fail detection
     fail_uart = True
     fail_decode = True
