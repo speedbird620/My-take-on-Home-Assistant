@@ -4,8 +4,7 @@ import gc
 import json
 import machine
 import config
-from machine import UART
-from machine import Pin
+from machine import UART, Pin
 from umqtt.simple import MQTTClient
 
 # Starting the UART
@@ -55,17 +54,23 @@ print("MQTT CONNECTED")
 # The main loop
 while True:
 
-    # Reading the UART string
-    t = uart.readline()
-
     # Setting up the fail detection
-    fail = True
+    fail_uart = True
+    fail_decode = True
+
+    # Reading the UART string
+    try:
+        t = uart.readline()
+        # Sucess, reseting the fail detection 
+        fail_uart = False
+    except:        
+         print('Except done when UART-ing!')
 
     # Decoding UART string from bytes to something readable
     try:
         s = t.decode("utf-8")
         # Sucess, reseting the fail detection 
-        fail = False
+        fail_decode = False
     except:        
          print('Except done when decoding!')
 
@@ -73,7 +78,7 @@ while True:
         # longer than 3 chars
         # new since the last scan cycle
         # not failed
-    if len(s) > 3 and s != s_old and not fail:
+    if len(s) > 3 and s != s_old and not fail_decode and not fail_uart:
 
         # Setting up the basics in order to send the MQTT-message later
         prefix = """{"hanport_a": {"""
@@ -303,3 +308,7 @@ while True:
     
     # Flipping the LED, just for fun
     led.toggle()
+
+
+
+
