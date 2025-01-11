@@ -8,12 +8,14 @@ from machine import UART
 from machine import Pin
 from umqtt.simple import MQTTClient
 
+# Starting the UART
 uart = UART(1, baudrate=115200, invert=UART.INV_RX, rx=Pin(5), timeout=11000)
-#uart = open("test_data.txt")
 
+# Defining the LED
 led = machine.Pin("LED", machine.Pin.OUT)
-led.on()
+led.off()
 
+# Defining the network
 network.hostname(config.MyHostName)
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -24,6 +26,7 @@ s_old = ""
 date = ""
 date_old = ""
 
+# Connect to the network
 waitcount = 0
 while wlan.status() != 3:
    waitcount+=1
@@ -33,42 +36,46 @@ while wlan.status() != 3:
       led.off()
       machine.reset()
 
-#led on when connected to wlan
+# Yay! Led on when connected to wlan
 led.on()
 print("WIFI CONNECTED")
+
+# Defining the MQTT
 mqc = MQTTClient(config.MQTTTopic, config.MQTTHost, 1883, config.MQTTUser, config.MQTTPass)
 
+# Connect to MQTT
 try:
    mqc.connect()
 except:
    print("MQTT NO JOY, rebooting")
    time.sleep(2)
    machine.soft_reset()
-   
 print("MQTT CONNECTED")
 
+# The main loop
 while True:
-    mvpos = 0
-    t = uart.readline()
-    #s = uart.readline()
-    #s = "aaa"
-    #print('t: ' + str(t))
-    #s = ""
 
+    # Reading the UART string
+    t = uart.readline()
+
+    # Setting up the fail detection
+    fail = True
+
+    # Decoding UART string from bytes to something readable
     try:
-         s = t.decode("utf-8")
+        s = t.decode("utf-8")
+        # Sucess, reseting the fail detection 
+        fail = False
     except:        
-         s = ""
          print('Except done when decoding!')
 
-    if len(s) > 3 and s != s_old:
-        #print('A')
-        #print('s: ' + s)
+    # The string has to be:
+        # longer than 3 chars
+        # new since the last scan cycle
+        # not failed
+    if len(s) > 3 and s != s_old and not fail:
 
-        #a = 9
-        #config_payload = """{"hanport_a": {"power":""" + str(a) + "}}"
-        #mqc.publish(config.MQTTTopic,config_payload)
-
+        # Setting up the basics in order to send the MQTT-message later
         prefix = """{"hanport_a": {"""
         suffix = "}}"
         message = ""
@@ -260,16 +267,20 @@ while True:
         #print("A: " + value)
         #print("C: " + str(value.find(".")))
         
+        # In case the string contains a decimal point (.), make it a float
+        # and back to a string to get the format corrected. Otherwise
+        # HomeAssistant will fail.
         if value.find(".") > 0:
-            f = float(value)
-            value = str(f)
+            try:
+                f = float(value)
+                value = str(f)
+            except:
+                print('Except when float:' + value)                
             #print("B: " + value)
             
-        
+        # Ok, time to compile the message and send it
         if len(value) > 0:
-            #payload = prefix + '"' + message + '"' + ': ' + '1.32' + suffix
             payload = prefix + '"' + message + '"' + ': ' + value + suffix
-            #print('p: ' + payload)
             
             try:
                 mqc.publish(config.MQTTTopic,payload)
@@ -277,19 +288,18 @@ while True:
             except:
                 #machine.soft_reset()
                 print('Except done when publish!')
-
+        
+        # Rebooting at midnight, just for good measure
         if (date[:6] != date_old) and (date != ""):
             print("A new date, lets reboot!")
             machine.soft_reset()
 
+    # Setting variables in order to detect flank
     s_old = s
     date_old = date[:6]
 
-
-    #time.sleep(0.3)
-
+    # Going out with the garbage
     gc.collect()
-    led.on()
-
-
-
+    
+    # Flipping the LED, just for fun
+    led.toggle()
