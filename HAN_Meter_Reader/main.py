@@ -44,15 +44,20 @@ mqc = MQTTClient(config.MQTTTopic, config.MQTTHost, 1883, config.MQTTUser, confi
 
 # Connect to MQTT
 try:
-   mqc.connect()
+    mqc.connect()
 except:
-   print("MQTT NO JOY, rebooting")
-   time.sleep(2)
-   machine.soft_reset()
-print("MQTT CONNECTED")
+    print("MQTT NO JOY, rebooting")
+    time.sleep(2)
+    machine.soft_reset()
+    print("MQTT CONNECTED")
 
 # The main loop
 while True:
+
+    print("Start sleeping")
+    time.sleep(2)
+    print("Stopped sleeping")
+
 
     # Reseting from last scan
     s = ""
@@ -297,10 +302,10 @@ while True:
                 #machine.soft_reset()
                 print('Except done when publish!')
         
-        # Rebooting at midnight, just for good measure
-        if (date[:6] != date_old) and (date != ""):
-            print("A new date, lets reboot!")
-            machine.soft_reset()
+    # Rebooting at midnight, just for good measure
+    if (date[:6] != date_old) and (date != ""):
+        print("A new date, lets reboot!")
+        #machine.soft_reset()
 
     # Setting variables in order to detect flank
     s_old = s
@@ -311,7 +316,6 @@ while True:
     
     # Flipping the LED, just for fun
     led.toggle()
-
 
 
 
