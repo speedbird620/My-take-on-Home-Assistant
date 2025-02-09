@@ -2,6 +2,7 @@
 # avionics@skyracer.net
 #
 # 0.1 - First version
+# 0.2 - Object oriented the message handling
 #
 
 import network
@@ -35,7 +36,74 @@ tajm = ""
 date = ""
 date_old = ""
 i = 0
+j = 0
+k = 0
 last = 0
+
+MQTTmessageArray = [
+                    'date', 
+					'a_meter_u',
+					'a_meter_i',
+					'r_meter_u',
+					'r_meter_i',
+					'a_effekt_u',
+					'a_effekt_u',
+					'r_effekt_u',
+					'r_effekt_i',
+					'a_effekt_l1_u',
+					'a_effekt_l2_u',
+					'a_effekt_l3_u',
+					'a_effekt_l1_i',
+					'a_effekt_l2_i',
+					'a_effekt_l3_i',
+					'r_effekt_l1_u',
+					'r_effekt_l2_u',
+					'r_effekt_l3_u',
+					'r_effekt_l1_i',
+					'r_effekt_l2_i',
+					'r_effekt_l3_i',
+					'r_effekt_l1_u',
+					'r_effekt_l2_u',
+					'r_effekt_l3_u',
+					'volt_l1',
+					'volt_l2',
+					'volt_l3',
+					'amp_l1',
+					'amp_l2',
+					'amp_l3']
+					
+identifierArray = 	[
+					'0-0:1.0.0',
+					'1-0:1.8.0',
+					'1-0:2.8.0',
+					'1-0:3.8.0',
+					'1-0:4.8.0',
+					'1-0:1.7.0',
+					'1-0:2.7.0',
+					'1-0:3.7.0',
+					'1-0:4.7.0',
+					'1-0:21.7.0',
+					'1-0:41.7.0',
+					'1-0:61.7.0',
+					'1-0:22.7.0',
+					'1-0:42.7.0',
+					'1-0:62.7.0',
+					'1-0:23.7.0',
+					'1-0:43.7.0',
+					'1-0:63.7.0',
+					'1-0:24.7.0',
+					'1-0:44.7.0',
+					'1-0:64.7.0',
+					'1-0:23.7.0',
+					'1-0:43.7.0',
+					'1-0:63.7.0',
+					'1-0:32.7.0',
+					'1-0:52.7.0',
+					'1-0:72.7.0',
+					'1-0:31.7.0',
+					'1-0:51.7.0',
+					'1-0:71.7.0'
+					]
 
 # Connect to the network
 waitcount = 0
@@ -119,202 +187,28 @@ while True:
                 message = ""
                 value = ""
 
-				# I have to admit that the decoding below is rudimentally done. It can be done 
-				# in much fancier ways, but since this is open source code noobs like me will 
-				# have a hard time to digest and understand what is done in the code. Therefore
-				# I want to keep it stupidly simple by avoiding object orientation. 
-
-				# There are many different types of messages that is decoded in the same manner.
-				# I will decsribe one of them in detail. 
-
 				# The message is consisting of three parts: identifier, the content and the end
 				# Example in this case: '0-0:1.0.0(231117132609W)'
 				# Identifier: 	'0-0:1.0.0('
 				# Content:		'231117132609'
 				# The end: 		'W)'
-				
-				# Checking the identifier of the message
-                if (s[:9]) == "0-0:1.0.0":
-					# Bingo, it is the date/time message according to the manual: 'Dagens Datum/ Tid (normaltid)'
-                    # Example '0-0:1.0.0(231117132609W)'
-                    message = "date"				# This will later be included in the MQTT-message. Note: this string needs to correspond to the Home Assistant configuration
-                    value = s[10:22]				# Extracting the content which will later be included in the MQTT-message
-                    date = s[10:16]					# Saving the date for a later time
-                    tajm = s[16:22]					# Saving the time for a later date
-
-                elif (s[:9]) == "1-0:1.8.0":
-                    # Mätarställning Aktiv Energi Uttag, kWh
-                    # 1-0:1.8.0(00010293.840*kWh)
-                    message = "a_meter_u"
-                    value = s[10:22]
-
-                elif (s[:9]) == "1-0:2.8.0":
-                    # Mätarställning Aktiv Energi Inmatning, kWh
-                    # 1-0:2.8.0(00000000.000*kWh)
-                    message = "a_meter_i"
-                    value = s[10:22]
-
-                elif (s[:9]) == "1-0:3.8.0":
-                    # Mätarställning Reaktiv Energi Uttag, kVArh
-                    # 1-0:3.8.0(00000957.525*kVArh)
-                    message = "r_meter_u"
-                    value = s[10:22]
-
-                elif (s[:9]) == "1-0:4.8.0":
-                    # Mätarställning Rektiv Energi Inmatning , kVArh
-                    # 1-0:4.8.0(00001483.853*kVArh)
-                    message = "r_meter_i"
-                    value = s[10:22]
-
-                elif (s[:9]) == "1-0:1.7.0":
-                    # Aktiv effekt uttag, kW
-                    # 1-0:1.7.0(0000.345*kW)
-                    message = "a_effekt_u"
-                    value = s[10:18]
-
-                elif (s[:9]) == "1-0:2.7.0":
-                    # Aktiv effekt inmatning, kW
-                    # 1-0:2.7.0(0000.000*kW)
-                    message = "a_effekt_u"
-                    value = s[10:18]
-
-                elif (s[:9]) == "1-0:3.7.0":
-                    # Reaktiv effekt uttag, kWAr
-                    # 1-0:3.7.0(0000.252*kVAr)
-                    message = "r_effekt_u"
-                    value = s[10:18]
-
-                elif (s[:9]) == "1-0:4.7.0":
-                    # Reaktiv effekt inmatning, kVAr
-                    # 1-0:4.7.0(0000.252*kVAr)
-                    message = "r_effekt_i"
-                    value = s[10:18]
-
-                elif (s[:10]) == "1-0:21.7.0":
-                    # Aktiv effekt uttag L1, kW
-                    # 1-0:21.7.0(0000.205*kW)
-                    message = "a_effekt_l1_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:41.7.0":
-                    # Aktiv effekt uttag L2, kW
-                    # 1-0:41.7.0(0000.288*kW)
-                    message = "a_effekt_l2_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:61.7.0":
-                    # Aktiv effekt uttag L3, kW
-                    # 1-0:61.7.0(0000.006*kW)
-                    message = "a_effekt_l3_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:22.7.0":
-                    # Aktiv effekt inmatning L1, kW
-                    # 1-0:22.7.0(0000.000*kW)
-                    message = "a_effekt_l1_i"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:42.7.0":
-                    # Aktiv effekt L2 inmatning, kW
-                    # 1-0:42.7.0(0000.000*kW)
-                    message = "a_effekt_l2_i"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:62.7.0":
-                    # Aktiv effekt L3 inmatning, kW
-                    # 1-0:62.7.0(0000.000*kW)
-                    message = "a_effekt_l3_i"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:23.7.0":
-                    # Reaktiv effekt uttag L1, kW
-                    # 1-0:23.7.0(0000.000*kVAr)
-                    message = "r_effekt_l1_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:43.7.0":
-                    # Reaktiv effekt L2 uttag, kW
-                    # 1-0:23.7.0(0000.000*kVAr)
-                    message = "r_effekt_l2_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:63.7.0":
-                    # Reaktiv effekt L3 uttag, kW
-                    # 1-0:23.7.0(0000.000*kVAr)
-                    message = "r_effekt_l3_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:24.7.0":
-                    # Reaktiv effekt inmatning L1, kW
-                    # 1-0:24.7.0(0000.102*kVAr)
-                    message = "r_effekt_l1_i"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:44.7.0":
-                    # Reaktiv effekt inmatning L2, kW
-                    # 1-0:24.7.0(0000.102*kVAr)
-                    message = "r_effekt_l2_i"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:64.7.0":
-                    # Reaktiv effekt inmatning L3, kW
-                    # 1-0:24.7.0(0000.102*kVAr)
-                    message = "r_effekt_l3_i"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:23.7.0":
-                    # Reaktiv effekt uttag L1, kW
-                    # 1-0:23.7.0(0000.000*kVAr)
-                    message = "r_effekt_l1_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:43.7.0":
-                    # Reaktiv effekt L2 uttag, kW
-                    # 1-0:43.7.0(0000.000*kVAr)
-                    message = "r_effekt_l2_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:63.7.0":
-                    # Reaktiv effekt L3 uttag, kW
-                    # 1-0:23.7.0(0000.000*kVAr)
-                    message = "r_effekt_l3_u"
-                    value = s[11:18]
-
-                elif (s[:10]) == "1-0:32.7.0":
-                    # Fasspänning L1, v
-                    # 1-0:32.7.0(229.4*V)
-                    message = "volt_l1"
-                    value = s[11:16]
-
-                elif (s[:10]) == "1-0:52.7.0":
-                    # Fasspänning L2, v
-                    # 1-0:52.7.0(228.6*V)
-                    message = "volt_l2"
-                    value = s[11:16]
-
-                elif (s[:10]) == "1-0:72.7.0":
-                    # Fasspänning L3, v
-                    # 1-0:72.7.0(230.0*V)
-                    message = "volt_l3"
-                    value = s[11:16]
-
-                elif (s[:10]) == "1-0:31.7.0":
-                    # Fasström L1, v
-                    # 1-0:31.7.0(000.1*A)
-                    message = "amp_l1"
-                    value = s[11:16]
-
-                elif (s[:10]) == "1-0:51.7.0":
-                    # Fasström L1, A
-                    # 1-0:51.7.0(000.7*A)
-                    message = "amp_l2"
-                    value = s[11:16]
-
-                elif (s[:10]) == "1-0:71.7.0":
-                    # Fasström L3, v
-                    # 1-0:71.7.0(001.1*A)
-                    message = "amp_l3"
-                    value = s[11:16]
+               
+                value = ''
+                k = 0							# Reset of array counter
+                while k < len(identifierArray) and value == '':
+                    # Doing this until we run out of array or a value is found
+                    if s[0:len(identifierArray[k])] == identifierArray[k]:
+                        # The identifier in the string matches an identifier in the array, we found the message
+                        message = MQTTmessageArray[k]		# Saving the message string to send it later
+                        if s.find('*') > 0:
+                            # Messages with '*' is measurements. Cropping away the identifier and the end 
+                            value = s[(len(identifierArray[k]) + 1):(s.find('*'))]
+                        elif s.find('W') > 0:
+                            # Messages with 'W' is the date stamp. Cropping away the identifier and the end
+                            value = s[(len(identifierArray[k]) + 1):(s.find('W'))]
+                            date = s[10:16]                 # Saving the date for a later time
+                            tajm = s[16:22]                 # Saving the time for a later date
+                    k = k + 1								# Notching up the array counter
 
                 # In case the string contains a decimal point (.), make it a float
                 # and then back to a string to get the format corrected. Otherwise
