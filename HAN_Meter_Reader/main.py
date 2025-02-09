@@ -61,8 +61,7 @@ except:
     print("MQTT NO JOY, rebooting")
     time.sleep(2)
     machine.soft_reset()
-    print("MQTT CONNECTED")
-
+	
 # The main loop: here we go!
 while True:
 
