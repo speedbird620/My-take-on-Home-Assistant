@@ -21,13 +21,15 @@ wlan.active(True)
 wlan.connect(config.SSID, config.PSK)
 led.off()
 
+# Defining the variables
 StringArray = [''] * 50
-TimeArray = [0] * 50
-CountArray = [0] * 50
+fail_decode = True
 s = ""
-s_old = ""
+tajm = ""
 date = ""
 date_old = ""
+i = 0
+last = 0
 
 # Connect to the network
 waitcount = 0
@@ -55,68 +57,85 @@ except:
     machine.soft_reset()
     print("MQTT CONNECTED")
 
-i = 0
-x = 0
-last = 0
-z = 0
-
-# The main loop
-#while x < 20:
+# The main loop: here we go!
 while True:
-    
+
+	# Note: the UART buffert size of the RP2040/RP2350 is only 256 characters. Since
+	# the baudrate is so high, the buffert is filled very quickly. In order to mitigate 
+	# this shortcoming, the information in the UART is transferred to an array in a 
+	# while loop as quickliy as possible. Once all of the information in the buffert 
+	# is obatined it can be sorted out later. The interval between the messages from 
+	# the HAN-port is sent every 10 seconds, there are plenty of time after the message
+	# is placed in the array.
+
+	# Reading UART
     while uart.any() > 2:
-        StringArray[i] = uart.readline()
-        if len(StringArray[i]) > 2:
-            i = i + 1
-            TimeArray[i] = time.ticks_ms()
-            CountArray[i] = z
-            last = time.ticks_ms()
+		# Knock knock ... there is something in the UART buffer
+        StringArray[i] = uart.readline()	# Transfer a line to the array
+        i = i + 1							# Tick up the array counter
+        last = time.ticks_ms()				# Saving the latest time stamp
 
+	# Getting the 
     now = time.ticks_ms()
+
+    # Checking how much time has passed since the last time the UART was read
     if i > 0 and (now > (last + 500)) :
-        
-        j = 0
+    # I has passed more than 500 ms since the latest line in the UART was read. 
+        # Therefore, it can be presumed that the message from the HAN-port is complete.
+    
+        j = 0   							# Resetting the read out array counter
 
+        # Reading thorugh the array
         while not j > i:
-            #print(StringArray[j])
+            # We have not yet got to the end of the array
 
             #print(StringArray[j])
-            #print('i: ' + str(i) + ' , j: ' + str(j) + ' time: ' + str(TimeArray[j]) + ' count: ' + str(CountArray[i]))
+            #print('i: ' + str(i) + ' , j: ' + str(j))
+
+            fail_decode = True				# Resetting the fail flag
 
             # Decoding UART string from bytes to something readable
             try:
+                # Sometimes this will fail (pls dont ask me why), hence the safeguarding with a try
                 s = StringArray[j].decode("utf-8")
                 # Sucess, reseting the fail detection 
                 fail_decode = False
 
-                #print("C")
-
             except:
-                 print(date_old + ': Except done when decoding!')
+                # You see, thank goodness I was using a try
+                print(tajm + ': Except was done when decoding!')
 
-                # The string has to be:
-                # longer than 3 chars
-                # new since the last scan cycle
-                # not failed
-            if len(s) > 3 and s != s_old and not fail_decode:
+            # If the decoding was successful, lets disect the string (the fun part)
+            if not fail_decode:
 
-                #print("D")
-
-                #print(s)
-
-                # Setting up the basics in order to send the MQTT-message later
+                # Setting up the basics in order to complie and send the MQTT-message later
                 prefix = """{"hanport_a": {"""
                 suffix = "}}"
                 message = ""
                 value = ""
 
+				# I have to admit that the decoding below is rudimentally done. It can be done 
+				# in much fancier ways, but since this is open source code noobs like me will 
+				# have a hard time to digest and understand what is done in the code. Therefore
+				# I want to keep it stupidly simple by avoiding object orientation. 
+
+				# There are many different types of messages that is decoded in the same manner.
+				# I will decsribe one of them in detail. 
+
+				# The message is consisting of three parts: identifier, the content and the end
+				# Example in this case: '0-0:1.0.0(231117132609W)'
+				# Identifier: 	'0-0:1.0.0('
+				# Content:		'231117132609'
+				# The end: 		'W)'
+				
+				# Checking the identifier of the message
                 if (s[:9]) == "0-0:1.0.0":
-                    # Dagens Datum/ Tid (normaltid)
-                    # 0-0:1.0.0(231117132609W)
-                    message = "date"
-                    value = s[10:22]
-                    #print("Date: " + value)
-                    x = x + 1
+					# Bingo, it is the date/time message according to the manual: 'Dagens Datum/ Tid (normaltid)'
+                    # Example '0-0:1.0.0(231117132609W)'
+                    message = "date"				# This will later be included in the MQTT-message. Note: this string needs to correspond to the Home Assistant configuration
+                    value = s[10:22]				# Extracting the content which will later be included in the MQTT-message
+                    date = s[10:16]					# Saving the date for a later time
+                    tajm = s[16:22]					# Saving the time for a later date
 
                 elif (s[:9]) == "1-0:1.8.0":
                     # Mätarställning Aktiv Energi Uttag, kWh
@@ -292,61 +311,45 @@ while True:
                     message = "amp_l3"
                     value = s[11:16]
 
-                #else:
-                #    print("Else: ' + s)
-
-                #print("A: " + value)
-                #print("C: " + str(value.find(".")))
-                
                 # In case the string contains a decimal point (.), make it a float
-                # and back to a string to get the format corrected. Otherwise
-                # HomeAssistant will fail.
+                # and then back to a string to get the format corrected. Otherwise
+                # HomeAssistant will fail. Probably there is a better way to do it,
+				# but I havent found it yet. Pls let me know.
                 if value.find(".") > 0:
-
-                    #print("E")
-
-                    try:
-                        f = float(value)
-                        value = str(f)
-                        
-                        #print("F")
-
-                    except:
-                        print(date_old + ': Except when float:' + value + ", string: " + s)                
+					# A decimal point is found, lets make it a float
+                    f = float(value)			# Make the string a float
+                    value = str(f)				# Make the string great again! God bless America!
                     
-                # Ok, time to compile the message and send it
-                if len(value) > 0:
-
-                    #print("G")
-
-                    payload = prefix + '"' + message + '"' + ': ' + value + suffix
-                    #print('Payload: ' + payload)
-                    
-                    try:
-                        mqc.publish(config.MQTTTopic,payload)
-                        
-                    except:
-                        #machine.soft_reset()
-                        print(date_old + ': Except done when publish!')
+                # Ok, time to compile the message
+                payload = prefix + '"' + message + '"' + ': ' + value + suffix
                 
-            # Rebooting at midnight, just for good measure
-            if (date[:6] != date_old) and (date != ""):
-                print(date_old + ": A new date, lets reboot!")
-                #machine.soft_reset()
+                # Seding the message
+                try:
+                    # Using try in case the broker is broken
+                    mqc.publish(config.MQTTTopic,payload)
+                    
+                except:
+                    print(tajm + ': Except done when publish!')
+                
+            # Rebooting at midnight, just for good measure. One never knows ...
+            if (date != date_old) and (date_old != ""):
+                # A new date is detected
+                print(tajm + ": Finnaly, a new day. Lets reboot before we screw things up!")
+                machine.soft_reset()
 
             # Setting variables in order to detect flank
-            s_old = s
-            date_old = date[:6]
+            date_old = date
 
             # Going out with the garbage
             gc.collect()
             
             # Flipping the LED, just for fun
             led.toggle()
-            #print("H")
 
-            j = j + 1
+            j = j + 1               		# Notching up the read out array counter
+            
+        i = 0   							# Resetting the read in array counter
 
-        i = 0
 
     
+
