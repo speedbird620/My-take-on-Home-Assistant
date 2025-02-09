@@ -1,3 +1,9 @@
+# HAN-port reader for Swedish power meters for Raspberry Pi Pico
+# avionics@skyracer.net
+#
+# 0.1 - First version
+#
+
 import network
 import time
 import gc
