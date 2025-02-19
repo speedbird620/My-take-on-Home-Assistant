@@ -3,7 +3,7 @@
 #
 # 0.1 - First version
 # 0.2 - Object oriented the message handling
-#
+# 0.3 - Added a physical jumper and watchdog
 
 import network
 import time
@@ -11,7 +11,7 @@ import gc
 import json
 import machine
 import config
-from machine import UART, Pin
+from machine import UART, Pin, WDT
 from umqtt.simple import MQTTClient
 
 # Starting the UART
@@ -20,6 +20,13 @@ uart = UART(1, baudrate=115200, invert=UART.INV_RX, rx=Pin(5), timeout=11000)
 # Defining the LED
 led = machine.Pin("LED", machine.Pin.OUT)
 led.off()
+
+# Defining the pins
+pin14 = Pin("GP14", Pin.IN)
+pin15 = Pin("GP15", Pin.OUT)
+
+# Set pin 15 to provide the power to the jumper
+pin15.on()
 
 # Defining the network
 network.hostname(config.MyHostName)
@@ -39,7 +46,7 @@ i = 0
 j = 0
 k = 0
 last = 0
-
+WatchDogIsAlive = False
 MQTTmessageArray = [
                     'date', 
 					'a_meter_u',
@@ -129,7 +136,17 @@ except:
     print("MQTT NO JOY, rebooting")
     time.sleep(2)
     machine.soft_reset()
-	
+
+# Check if the watchdog shall be enabled:
+# Jumper between pin 14 and 15 = enable watchdog (pin 15 is already set high)
+# Jumper between pin 14 and GND = disable watchdog
+if pin14() and not WatchDogIsAlive:
+    # Pin14 is high, the jumper is set and the watchdog shall be enabled
+    wdt = WDT(timeout=2000)             # Enabling the built in watchdog
+    wdt.feed()                          # Feeding the watchdog
+    WatchDogIsAlive = True              # Setting the watchdog flag
+    print("The watchdog is alive!")
+
 # The main loop: here we go!
 while True:
 
@@ -140,6 +157,9 @@ while True:
 	# is obatined it can be sorted out later. The interval between the messages from 
 	# the HAN-port is sent every 10 seconds, there are plenty of time after the message
 	# is placed in the array.
+
+    if WatchDogIsAlive:
+        wdt.feed()		    # Feeding the watchdog
 
 	# Reading UART
     while uart.any() > 2:
