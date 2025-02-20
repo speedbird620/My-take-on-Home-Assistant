@@ -10,17 +10,21 @@ https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurs
 
 ![image](https://github.com/user-attachments/assets/a9d3078c-ac0a-473c-85f7-d4e39ade3f6f)
 
-Notera att GP4 sätts hög och matar GP5 med ström via motståndet R1.
+![image](https://github.com/user-attachments/assets/93b8c348-3d69-4aec-9d40-081355c959d5)
 
+![image](https://github.com/user-attachments/assets/8bb62b47-2216-4ab5-b666-e0a1cea5e7d7)
 
-![image](https://github.com/user-attachments/assets/f4872115-89f5-47be-b81a-cbf5b15ee0e4)
+![image](https://github.com/user-attachments/assets/0712c6fe-0c52-49b5-9e63-ad5ca83c0038)
 
-![image](https://github.com/user-attachments/assets/9d47e774-c2b8-4ee1-ba86-0cab7114ebaa)
+/Watchdog är inakviverad./
 
-![image](https://github.com/user-attachments/assets/85ed337f-ec65-4e3d-a764-57b0225a62da)
+![image](https://github.com/user-attachments/assets/87887b38-29a0-4251-8850-dd538e990f32)
 
-![image](https://github.com/user-attachments/assets/e8a57f75-d8c5-4fe0-a88c-3ab08dd35dcc)
+/Watchdog är akviverad./
 
-![image](https://github.com/user-attachments/assets/52b90cac-16fd-416f-a3da-5663a39152b0)
+![image](https://github.com/user-attachments/assets/34e6284f-f23f-4599-be12-f71474531ac2)
 
-Notera motståndet mellan GP4 och GP5.
+![image](https://github.com/user-attachments/assets/1c09210e-c75e-4623-9d2b-2606edec9858)
+
+![image](https://github.com/user-attachments/assets/b27396c6-d7b4-4c79-a0bf-987ebe3d2bf0)
+
