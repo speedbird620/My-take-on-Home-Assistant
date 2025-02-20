@@ -16,11 +16,11 @@ https://www.energiforetagen.se/globalassets/energiforetagen/det-erbjuder-vi/kurs
 
 ![image](https://github.com/user-attachments/assets/0712c6fe-0c52-49b5-9e63-ad5ca83c0038)
 
-/Watchdog är inakviverad./
+Watchdog är inaktviverad.
 
 ![image](https://github.com/user-attachments/assets/87887b38-29a0-4251-8850-dd538e990f32)
 
-/Watchdog är akviverad./
+Watchdog är aktviverad.
 
 ![image](https://github.com/user-attachments/assets/34e6284f-f23f-4599-be12-f71474531ac2)
 
