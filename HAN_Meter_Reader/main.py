@@ -3,7 +3,7 @@
 #
 # 0.1 - First version
 # 0.2 - Object oriented the message handling
-# 0.3 - Added a physical jumper and watchdog
+# 0.3 - Added a physical jumper and enabled internal watchdog
 
 import network
 import time
